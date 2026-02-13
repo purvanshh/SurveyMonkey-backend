@@ -7,13 +7,6 @@ import secrets
 from typing import Sequence
 
 from sqlalchemy.orm import Session
-
-# Frontend base URL for share links. Set FRONTEND_URL in production (e.g. https://yourapp.vercel.app).
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
-
-
-def _share_url(token: str) -> str:
-    return f"{FRONTEND_URL}/s/{token}"
 from fastapi import HTTPException, status
 
 from models.survey import Survey
@@ -21,6 +14,13 @@ from models.question import Question
 from models.option import Option
 from schemas.survey import SurveyCreate, SurveyUpdate
 from schemas.question import QuestionCreate, QuestionUpdate
+
+# Frontend base URL for share links. Set FRONTEND_URL in production (e.g. https://yourapp.vercel.app).
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+
+
+def _share_url(token: str) -> str:
+    return f"{FRONTEND_URL}/s/{token}"
 
 
 # ---------------------------------------------------------------------------
