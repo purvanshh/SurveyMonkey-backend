@@ -82,6 +82,50 @@ def get_survey_by_token(db: Session, share_token: str) -> Survey:
     return survey
 
 
+def generate_collector_link(db: Session, survey_id: str) -> dict:
+    """Generate a web link collector for a survey. Reuses existing token if present."""
+    survey = get_survey(db, survey_id)
+    if not survey.share_token:
+        survey.share_token = secrets.token_urlsafe(16)
+    survey.collector_type = "web_link"
+    db.commit()
+    db.refresh(survey)
+
+    from models.response import Response
+    count = db.query(Response).filter(Response.survey_id == survey_id).count()
+
+    return {
+        "collector_name": "Web Link 1",
+        "share_url": f"http://localhost:3000/s/{survey.share_token}",
+        "status": "Open",
+        "responses": count,
+        "date_modified": survey.updated_at.strftime("%Y-%m-%d") if survey.updated_at else "",
+    }
+
+
+def get_collectors(db: Session, survey_id: str) -> dict:
+    """Return collector metadata with live response count from DB."""
+    survey = get_survey(db, survey_id)
+
+    from models.response import Response
+    count = db.query(Response).filter(Response.survey_id == survey_id).count()
+
+    collectors = []
+    if survey.share_token:
+        collectors.append({
+            "collector_name": "Web Link 1",
+            "share_url": f"http://localhost:3000/s/{survey.share_token}",
+            "status": "Open",
+            "responses": count,
+            "date_modified": survey.updated_at.strftime("%Y-%m-%d") if survey.updated_at else "",
+        })
+
+    return {
+        "collectors": collectors,
+        "total_responses": count,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Question CRUD
 # ---------------------------------------------------------------------------

@@ -60,6 +60,18 @@ def share_survey(survey_id: str, db: Session = Depends(get_db)):
     return SurveyShareResponse(share_token=token, share_url=url)
 
 
+@router.post("/surveys/{survey_id}/generate-link")
+def generate_collector_link(survey_id: str, db: Session = Depends(get_db)):
+    """Generate a web link collector for the survey."""
+    return survey_service.generate_collector_link(db, survey_id)
+
+
+@router.get("/surveys/{survey_id}/collectors")
+def get_collectors(survey_id: str, db: Session = Depends(get_db)):
+    """Get all collectors for a survey with live response counts."""
+    return survey_service.get_collectors(db, survey_id)
+
+
 # ---------------------------------------------------------------------------
 # Question endpoints
 # ---------------------------------------------------------------------------

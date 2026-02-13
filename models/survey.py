@@ -24,6 +24,7 @@ class Survey(Base):
     title = Column(String(255), nullable=False, default="Untitled")
     description = Column(Text, nullable=True, default="")
     share_token = Column(String(64), unique=True, nullable=True, index=True)
+    collector_type = Column(String(50), nullable=True, default=None)
     metadata_ = Column("metadata", JSON, nullable=True, default=dict)
     created_at = Column(DateTime(timezone=True), default=_utcnow, nullable=False)
     updated_at = Column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, nullable=False)

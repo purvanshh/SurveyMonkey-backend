@@ -13,7 +13,7 @@ from schemas.response import ResponseCreate, SurveySubmitRequest
 def submit_response(db: Session, survey_id: str, data: ResponseCreate | SurveySubmitRequest) -> Response:
     """
     Create a new response and its associated answers.
-    This is an atomic operation.
+    This is an atomic operation.  Also bumps survey.updated_at.
     """
     response = Response(
         survey_id=survey_id,
@@ -32,6 +32,13 @@ def submit_response(db: Session, survey_id: str, data: ResponseCreate | SurveySu
             value_json=answer_data.value_json,
         )
         db.add(answer)
+
+    # Touch survey.updated_at so collectors dashboard shows correct date
+    from models.survey import Survey
+    from datetime import datetime, timezone
+    survey = db.query(Survey).filter(Survey.id == survey_id).first()
+    if survey:
+        survey.updated_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(response)
