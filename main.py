@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -9,11 +11,15 @@ from routers import surveys, public, hosted, responses
 # Create all tables on startup
 Base.metadata.create_all(bind=engine)
 
+# CORS: allow comma-separated origins. Production: set CORS_ORIGINS=https://yourapp.vercel.app,http://localhost:3000
+_cors_str = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+CORS_ORIGINS = [o.strip() for o in _cors_str.split(",") if o.strip()]
+
 app = FastAPI(title="SurveyMonkey Clone API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

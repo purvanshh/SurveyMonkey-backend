@@ -2,10 +2,18 @@
 Survey service — all business logic for survey CRUD, questions, options, and sharing.
 """
 
+import os
 import secrets
 from typing import Sequence
 
 from sqlalchemy.orm import Session
+
+# Frontend base URL for share links. Set FRONTEND_URL in production (e.g. https://yourapp.vercel.app).
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+
+
+def _share_url(token: str) -> str:
+    return f"{FRONTEND_URL}/s/{token}"
 from fastapi import HTTPException, status
 
 from models.survey import Survey
@@ -71,7 +79,7 @@ def generate_share_token(db: Session, survey_id: str) -> tuple[str, str]:
         survey.share_token = secrets.token_urlsafe(16)
         db.commit()
         db.refresh(survey)
-    share_url = f"http://localhost:3000/s/{survey.share_token}"
+    share_url = _share_url(survey.share_token)
     return survey.share_token, share_url
 
 
@@ -96,7 +104,7 @@ def generate_collector_link(db: Session, survey_id: str) -> dict:
 
     return {
         "collector_name": "Web Link 1",
-        "share_url": f"http://localhost:3000/s/{survey.share_token}",
+        "share_url": _share_url(survey.share_token),
         "status": "Open",
         "responses": count,
         "date_modified": survey.updated_at.strftime("%Y-%m-%d") if survey.updated_at else "",
@@ -114,7 +122,7 @@ def get_collectors(db: Session, survey_id: str) -> dict:
     if survey.share_token:
         collectors.append({
             "collector_name": "Web Link 1",
-            "share_url": f"http://localhost:3000/s/{survey.share_token}",
+            "share_url": _share_url(survey.share_token),
             "status": "Open",
             "responses": count,
             "date_modified": survey.updated_at.strftime("%Y-%m-%d") if survey.updated_at else "",
