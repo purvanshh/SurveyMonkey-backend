@@ -32,18 +32,7 @@ def submit_survey(share_token: str, data: SurveySubmitRequest, db: Session = Dep
     survey = survey_service.get_survey_by_token(db, share_token)
     response = response_service.submit_response(db, survey.id, data)
 
-    # Re-fetch with enriched data
-    enriched = response_service.get_responses(db, survey.id)
-    # Return just the one we created
-    for r in enriched:
-        if r.id == response.id:
-            return r
+    # The response object from the service has the answers loaded.
+    # We can convert it directly to the response model.
+    return response
 
-    # Fallback — should never reach here
-    return ResponseResponse(
-        id=response.id,
-        survey_id=response.survey_id,
-        respondent_id=response.respondent_id,
-        submitted_at=response.submitted_at,
-        answers=[],
-    )

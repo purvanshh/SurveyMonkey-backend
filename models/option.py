@@ -23,6 +23,7 @@ class Option(Base):
 
     # Relationships
     question = relationship("Question", back_populates="options")
+    selected_answers = relationship("Answer", back_populates="selected_option", lazy="noload")
 
     def __repr__(self) -> str:
         return f"<Option id={self.id} label={self.label!r}>"

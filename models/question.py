@@ -32,6 +32,7 @@ class Question(Base):
         order_by="Option.order_index",
         lazy="selectin",
     )
+    answers = relationship("Answer", back_populates="question", lazy="noload")
 
     def __repr__(self) -> str:
         return f"<Question id={self.id} type={self.type!r}>"

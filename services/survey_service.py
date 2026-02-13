@@ -71,7 +71,7 @@ def generate_share_token(db: Session, survey_id: str) -> tuple[str, str]:
         survey.share_token = secrets.token_urlsafe(16)
         db.commit()
         db.refresh(survey)
-    share_url = f"/s/{survey.share_token}"
+    share_url = f"http://localhost:3000/s/{survey.share_token}"
     return survey.share_token, share_url
 
 

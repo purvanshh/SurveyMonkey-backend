@@ -1,4 +1,4 @@
-"""Response ORM model — one per survey submission."""
+"""Response ORM model."""
 
 import uuid
 from datetime import datetime, timezone
@@ -22,8 +22,8 @@ class Response(Base):
 
     id = Column(String(36), primary_key=True, default=_generate_uuid)
     survey_id = Column(String(36), ForeignKey("surveys.id", ondelete="CASCADE"), nullable=False, index=True)
-    respondent_id = Column(String(100), nullable=True)
     submitted_at = Column(DateTime(timezone=True), default=_utcnow, nullable=False)
+    respondent_id = Column(String(255), nullable=True, index=True)
     metadata_ = Column("metadata", JSON, nullable=True, default=dict)
 
     # Relationships

@@ -1,4 +1,4 @@
-"""Answer ORM model — one per question per response."""
+"""Answer ORM model."""
 
 import uuid
 
@@ -19,7 +19,7 @@ class Answer(Base):
     response_id = Column(String(36), ForeignKey("responses.id", ondelete="CASCADE"), nullable=False, index=True)
     question_id = Column(String(36), ForeignKey("questions.id", ondelete="CASCADE"), nullable=False, index=True)
     answer_text = Column(Text, nullable=True)
-    selected_option_id = Column(String(36), ForeignKey("options.id", ondelete="SET NULL"), nullable=True)
+    selected_option_id = Column(String(36), ForeignKey("options.id"), nullable=True, index=True)
     value_json = Column(JSON, nullable=True)
 
     # Relationships
